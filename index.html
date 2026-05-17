@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수업 시간 30초 스위치 ⚡</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ 수업 시간 30초 스위치</h1>
+            <p class="subtitle">수업 시작 전, 두뇌를 깨우는 30초!</p>
+        </header>
+
+        <main>
+            <button id="switch-btn" class="switch-button">🔴 스위치 ON!</button>
+
+            <div id="content-area" class="content-area hidden">
+                
+                <div class="card question-card">
+                    <h2>🤔 오늘의 질문</h2>
+                    <p id="today-question" class="display-text">스위치를 켜주세요!</p>
+                </div>
+
+                <div class="card quiz-card">
+                    <h2>💡 오늘의 과학/상식 퀴즈</h2>
+                    <div class="badge" id="quiz-category">분야</div>
+                    <p id="today-quiz" class="display-text quiz-question">퀴즈가 여기에 표시됩니다.</p>
+                    
+                    <div id="quiz-options" class="options-container">
+                        </div>
+
+                    <div id="quiz-explanation" class="explanation-container hidden">
+                        <p id="quiz-result-text" class="result-text"></p>
+                        <p id="quiz-exp-text" class="exp-text"></p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2026 수업 시간 30초 스위치 | 중학교 교실을 위한 아이스브레이킹</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
