@@ -1,5 +1,13 @@
-// 1. 구글 AI Studio에서 발급받은 API 키를 여기에 입력하세요.
-const API_KEY = "YOUR_GEMINI_API_KEY"; 
+// 1. 브라우저 저장소(localStorage)에서 API 키 불러오기
+let API_KEY = localStorage.getItem("gemini_api_key");
+
+// 저장된 키가 없다면 선생님께 창을 띄워 입력받기
+if (!API_KEY) {
+    API_KEY = prompt("⚡ [최초 1회 설정] 구글 Gemini API Key를 입력해주세요.\n이 브라우저에만 안전하게 저장되며, 소스코드가 올라간 깃허브에는 절대 노출되지 않습니다:");
+    if (API_KEY) {
+        localStorage.setItem("gemini_api_key", API_KEY.trim());
+    }
+}
 
 // 2. AI에게 보낼 명령(프롬프트) 정의 - 전 단원 과학 및 다양한 상식 유도
 const SYSTEM_PROMPT = `
@@ -26,9 +34,14 @@ const quizExpText = document.getElementById('quiz-exp-text');
 
 // 스위치 버튼 클릭 이벤트
 switchBtn.addEventListener('click', async () => {
-    if (API_KEY === "YOUR_GEMINI_API_KEY" || !API_KEY) {
-        alert("API 키가 설정되지 않았습니다. script.js 파일 상단에 키를 입력해주세요!");
-        return;
+    // 혹시나 취소를 눌렀거나 키가 없을 경우 다시 묻기
+    if (!API_KEY) {
+        API_KEY = prompt("API Key가 필요합니다. 구글 Gemini API Key를 입력해주세요:");
+        if (API_KEY) {
+            localStorage.setItem("gemini_api_key", API_KEY.trim());
+        } else {
+            return;
+        }
     }
 
     // 로딩 상태 표시
@@ -38,7 +51,7 @@ switchBtn.addEventListener('click', async () => {
     quizExplanation.classList.add('hidden');
 
     try {
-        // 구글 Gemini API 호출 (안정적인 gemini-1.5-flash 모델 사용)
+        // 구글 Gemini API 호출 (gemini-1.5-flash 모델 사용)
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -77,7 +90,12 @@ switchBtn.addEventListener('click', async () => {
             })
         });
 
-        if (!response.ok) throw new Error("API 요청에 실패했습니다.");
+        if (!response.ok) {
+            // API 키가 잘못되었을 가능성이 높으므로 저장된 키 삭제
+            localStorage.removeItem("gemini_api_key");
+            API_KEY = null;
+            throw new Error("API 요청에 실패했습니다. API 키를 다시 확인해주세요.");
+        }
 
         const data = await response.json();
         // AI가 보낸 응답 텍스트를 JSON으로 파싱
@@ -89,7 +107,7 @@ switchBtn.addEventListener('click', async () => {
 
     } catch (error) {
         console.error(error);
-        alert("문제를 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.");
+        alert(error.message || "문제를 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
         switchBtn.disabled = false;
         switchBtn.innerText = "⚡ 다음 스위치 ON!";
@@ -118,7 +136,7 @@ function displayContent(data) {
         button.addEventListener('click', () => {
             quizExplanation.classList.remove('hidden');
             
-            // 정답 확인 정교화 (공백 제거 후 비교)
+            // 정답 확인 (공백 제거 후 비교)
             if (option.trim() === quiz.answer.trim()) {
                 quizResultText.innerText = "⭕ 정답입니다! 멋져요!";
                 quizResultText.style.color = "#2f855a";
