@@ -1,0 +1,180 @@
+/* 기본 리셋 및 폰트 설정 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #4a00e0;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+/* 스위치 버튼 스타일 애니메이션 */
+.switch-button {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 20px 50px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+    transition: all 0.2s ease;
+    outline: none;
+    margin-bottom: 20px;
+}
+
+.switch-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6);
+}
+
+.switch-button:active {
+    transform: translateY(1px);
+}
+
+/* 콘텐츠 영역 */
+.content-area {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* 카드 스타일 */
+.card {
+    background: #f8f9fa;
+    border-left: 5px solid #4a00e0;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: left;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.quiz-card {
+    border-left-color: #00c6ff;
+}
+
+.card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.display-text {
+    font-size: 1.4rem;
+    font-weight: bold;
+    line-height: 1.5;
+    color: #222;
+}
+
+.badge {
+    display: inline-block;
+    background: #e0f7fa;
+    color: #006064;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 퀴즈 보기 버튼 스타일 */
+.options-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.option-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 15px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.option-btn:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+}
+
+/* 해설 스타일 */
+.explanation-container {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f0fff4;
+    border: 1px solid #c6f6d5;
+}
+
+.result-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.exp-text {
+    color: #4a5568;
+    font-size: 1.05rem;
+    line-height: 1.4;
+}
+
+footer {
+    margin-top: 40px;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 모바일 대응 */
+@media (max-width: 600px) {
+    .options-container {
+        grid-template-columns: 1fr;
+    }
+    header h1 { font-size: 2rem; }
+    .display-text { font-size: 1.1rem; }
+}
