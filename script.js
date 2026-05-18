@@ -59,8 +59,8 @@ switchBtn.addEventListener('click', async () => {
     quizExplanation.classList.add('hidden');
 
     try {
-        // [수정 완료] 오류를 뿜던 generationConfig를 제거하여 구글 서버 무조건 통과하도록 변경
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+        // [수정 완료] 현재 가장 활성화된 최신 gemini-2.5-flash 모델 적용 및 에러 유발 인자 제거
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -85,8 +85,8 @@ switchBtn.addEventListener('click', async () => {
         const data = await response.json();
         let jsonText = data.candidates[0].content.parts[0].text;
         
-        // [안전 장치 추가] 구글이 답변에 멋대로 붙인 마크다운 기호(```json ... ```)가 있다면 강제로 깎아냅니다.
-        jsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+        // AI가 혹시 마크다운 기호(```json ... ```)를 붙여서 주더라도 깨지지 않게 깔끔하게 깎아내는 정규식
+        jsonText = jsonText.replace(/```json/gi, '').replace(/```/gi, '').trim();
         
         const result = JSON.parse(jsonText);
 
@@ -96,11 +96,11 @@ switchBtn.addEventListener('click', async () => {
     } catch (error) {
         console.error(error);
         
-        // 에러가 나면 저장된 키를 지워 다음 새로고침 때 다시 입력창이 뜨도록 처리
+        // 에러가 나면 잘못 저장된 키를 지워 다음 새로고침 때 다시 입력창이 뜨도록 처리
         localStorage.removeItem("gemini_api_key");
         API_KEY = null;
         
-        alert("❌ 구글 서버 오류 발생!\n\n[구글이 보낸 진짜 이유]:\n" + error.message + "\n\n💡 해결법: 새로고침(F5) 후 '구글 AI Studio'에서 복사한 키를 정확히 다시 입력해주세요.");
+        alert("❌ 오류가 발생하여 API 키를 초기화했습니다.\n\n[원인]:\n" + error.message + "\n\n💡 해결법: 새로고침(F5) 후 '구글 AI Studio'에서 복사한 키를 다시 정확히 입력해주세요.");
     } finally {
         switchBtn.disabled = false;
         switchBtn.innerText = "⚡ 다음 스위치 ON!";
