@@ -91,4 +91,65 @@ switchBtn.addEventListener('click', async () => {
         });
 
         if (!response.ok) {
-            // API 키가 잘못되었거나 주소 오류일 가능성이 높으므로 저장된
+            // API 키가 잘못되었거나 주소 오류일 가능성이 높으므로 저장된 키 삭제
+            localStorage.removeItem("gemini_api_key");
+            API_KEY = null;
+            throw new Error("API 요청에 실패했습니다. API 키나 모델 설정을 다시 확인해주세요.");
+        }
+
+        const data = await response.json();
+        // AI가 보낸 응답 텍스트를 JSON으로 파싱
+        const jsonText = data.candidates[0].content.parts[0].text;
+        const result = JSON.parse(jsonText);
+
+        // 화면에 반영하기
+        displayContent(result);
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message || "문제를 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+        switchBtn.disabled = false;
+        switchBtn.innerText = "⚡ 다음 스위치 ON!";
+    }
+});
+
+// 데이터를 받아와 화면에 그려주는 함수
+function displayContent(data) {
+    contentArea.classList.remove('hidden');
+
+    // 1. 오늘의 질문 배치
+    todayQuestion.innerText = data.todays_question.question;
+
+    // 2. 오늘의 퀴즈 배치
+    const quiz = data.todays_trivia;
+    quizCategory.innerText = quiz.category;
+    todayQuiz.innerText = quiz.question;
+
+    // 보기 버튼 동적 생성
+    quizOptions.innerHTML = '';
+    quiz.options.forEach(option => {
+        const button = document.createElement('button');
+        button.classList.add('option-btn');
+        button.innerText = option;
+        
+        button.addEventListener('click', () => {
+            quizExplanation.classList.remove('hidden');
+            
+            // 정답 확인 (공백 제거 후 비교)
+            if (option.trim() === quiz.answer.trim()) {
+                quizResultText.innerText = "⭕ 정답입니다! 멋져요!";
+                quizResultText.style.color = "#2f855a";
+                quizExplanation.style.backgroundColor = "#f0fff4";
+                quizExplanation.style.borderColor = "#c6f6d5";
+            } else {
+                quizResultText.innerText = `❌ 아쉬워요! 정답은 [ ${quiz.answer} ] 입니다.`;
+                quizResultText.style.color = "#c53030";
+                quizExplanation.style.backgroundColor = "#fff5f5";
+                quizExplanation.style.borderColor = "#fed7d7";
+            }
+            quizExpText.innerText = quiz.explanation;
+        });
+        quizOptions.appendChild(button);
+    });
+}
