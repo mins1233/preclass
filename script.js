@@ -59,15 +59,12 @@ switchBtn.addEventListener('click', async () => {
     quizExplanation.classList.add('hidden');
 
     try {
-        // [수정 완료] 가장 안정적인 정식 v1 주소와 gemini-1.5-flash 모델 조합 사용
+        // [수정 완료] 오류를 뿜던 generationConfig를 제거하여 구글 서버 무조건 통과하도록 변경
         const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: SYSTEM_PROMPT }] }],
-                generationConfig: {
-                    responseMimeType: "application/json"
-                }
+                contents: [{ parts: [{ text: SYSTEM_PROMPT }] }]
             })
         });
 
@@ -86,7 +83,11 @@ switchBtn.addEventListener('click', async () => {
         }
 
         const data = await response.json();
-        const jsonText = data.candidates[0].content.parts[0].text;
+        let jsonText = data.candidates[0].content.parts[0].text;
+        
+        // [안전 장치 추가] 구글이 답변에 멋대로 붙인 마크다운 기호(```json ... ```)가 있다면 강제로 깎아냅니다.
+        jsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+        
         const result = JSON.parse(jsonText);
 
         // 화면에 반영하기
