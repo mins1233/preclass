@@ -10,14 +10,10 @@ if (!API_KEY || API_KEY.trim() === "" || API_KEY === "null" || API_KEY === "unde
     }
 }
 
-// 2. AI에게 보낼 명령(프롬프트) 정의 - 원하는 JSON 구조를 프롬프트에 직접 주입
+// 2. AI에게 보낼 명령(프롬프트) 정의
 const SYSTEM_PROMPT = `
 너는 중학교 교실에서 수업 시작 전 학생들의 집중력을 높이는 웹 앱 '수업 시간 30초 스위치'의 전속 콘텐츠 생성기야. 
 중학생(14~16세)의 눈높이에 맞는 '오늘의 질문' 1개와 '오늘의 퀴즈' 1개를 무작위로 생성해줘.
-
-[콘텐츠 작성 가이드]
-1. 오늘의 질문: 일상, 재미있는 상상, 가벼운 밸런스 게임 등 중학생이 흥미를 가질 주제 (예: 평생 스마트폰 없이 살기 vs 친구 없이 살기)
-2. 오늘의 퀴즈: 중학교 수준의 과학(물리, 화학, 생물, 지구과학 전 단원 랜덤) 또는 국어, 역사, 일반 상식 등에서 무작위 선정. 객관식(4지선다) 또는 OX 퀴즈로 낼 것.
 
 반드시 다른 부가 설명 없이 정확히 아래와 같은 JSON 구조로만 응답해줘:
 {
@@ -63,30 +59,30 @@ switchBtn.addEventListener('click', async () => {
     quizExplanation.classList.add('hidden');
 
     try {
-        // 가장 안정적인 정식 v1 주소와 gemini-1.5-flash 모델 조합 사용
+        // [수정 완료] 가장 안정적인 정식 v1 주소와 gemini-1.5-flash 모델 조합 사용
         const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: SYSTEM_PROMPT }] }],
                 generationConfig: {
-                    responseMimeType: "application/json" // JSON 반환 강제
+                    responseMimeType: "application/json"
                 }
             })
         });
 
-        // 에러 발생 시 구글이 보낸 실제 원인 메시지 추출하기
+        // 에러 발생 시 구글이 보낸 진짜 원인 메시지 추출하기
         if (!response.ok) {
-            let errorDetail = "구글 서버가 요청을 거절했습니다.";
+            let errorDetail = "";
             try {
                 const errData = await response.json();
                 if (errData.error && errData.error.message) {
-                    errorDetail += `\n(상세 원인: ${errData.error.message})`;
+                    errorDetail = errData.error.message;
                 }
             } catch (e) {
-                errorDetail += ` (에러 코드: ${response.status})`;
+                errorDetail = "상태 코드 " + response.status;
             }
-            throw new Error(errorDetail);
+            throw new Error(errorDetail || "알 수 없는 거절");
         }
 
         const data = await response.json();
@@ -103,7 +99,7 @@ switchBtn.addEventListener('click', async () => {
         localStorage.removeItem("gemini_api_key");
         API_KEY = null;
         
-        alert("❌ 오류가 발생하여 API 키를 초기화했습니다.\n\n" + error.message + "\n\n새로고침(F5) 후 올바른 키를 다시 입력해주세요.");
+        alert("❌ 구글 서버 오류 발생!\n\n[구글이 보낸 진짜 이유]:\n" + error.message + "\n\n💡 해결법: 새로고침(F5) 후 '구글 AI Studio'에서 복사한 키를 정확히 다시 입력해주세요.");
     } finally {
         switchBtn.disabled = false;
         switchBtn.innerText = "⚡ 다음 스위치 ON!";
